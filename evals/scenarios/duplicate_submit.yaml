@@ -1,0 +1,7 @@
+id: duplicate_submit_01
+description: The same create_order call is replayed; exactly one order must exist
+request: "Order 1 murukku to 560001"
+replay_create_order: 3
+expect:
+  outcome: order_created
+  orders_created_count: 1

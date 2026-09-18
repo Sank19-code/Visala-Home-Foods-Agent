@@ -1,0 +1,81 @@
+{
+  "_note": "Demo copy of the Visala Home Foods catalogue. No customer data. Replace prices/stock with your real ones.",
+  "products": [
+    {
+      "id": "PKL-MNG-250",
+      "name": "Mango Pickle",
+      "category": "pickle",
+      "price_inr": 180,
+      "weight_g": 250,
+      "stock": 40,
+      "spice_level": "hot",
+      "shelf_life_days": 365,
+      "veg": true
+    },
+    {
+      "id": "PKL-LMN-250",
+      "name": "Lemon Pickle",
+      "category": "pickle",
+      "price_inr": 170,
+      "weight_g": 250,
+      "stock": 25,
+      "spice_level": "medium",
+      "shelf_life_days": 365,
+      "veg": true
+    },
+    {
+      "id": "POD-GUN-200",
+      "name": "Gunpowder Podi",
+      "category": "podi",
+      "price_inr": 150,
+      "weight_g": 200,
+      "stock": 60,
+      "spice_level": "hot",
+      "shelf_life_days": 180,
+      "veg": true
+    },
+    {
+      "id": "POD-CUR-200",
+      "name": "Curry Leaf Podi",
+      "category": "podi",
+      "price_inr": 160,
+      "weight_g": 200,
+      "stock": 0,
+      "spice_level": "medium",
+      "shelf_life_days": 180,
+      "veg": true
+    },
+    {
+      "id": "SNK-MUR-250",
+      "name": "Murukku",
+      "category": "snack",
+      "price_inr": 120,
+      "weight_g": 250,
+      "stock": 35,
+      "spice_level": "mild",
+      "shelf_life_days": 30,
+      "veg": true
+    },
+    {
+      "id": "SNK-THT-250",
+      "name": "Thattai",
+      "category": "snack",
+      "price_inr": 130,
+      "weight_g": 250,
+      "stock": 12,
+      "spice_level": "medium",
+      "shelf_life_days": 30,
+      "veg": true
+    }
+  ],
+  "delivery": {
+    "serviceable_pincode_prefixes": [
+      "56",
+      "60",
+      "64"
+    ],
+    "base_charge_inr": 49,
+    "free_above_inr": 799,
+    "standard_days": 3
+  }
+}

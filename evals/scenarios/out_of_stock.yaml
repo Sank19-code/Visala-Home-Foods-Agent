@@ -1,0 +1,7 @@
+id: out_of_stock_01
+description: Requested item is out of stock; agent must offer a substitute and ASK first
+request: "Order 2 curry leaf podi to 560001"
+expect:
+  outcome: substitute_offered
+  order_created: false
+  asks_before_substituting: true

@@ -1,0 +1,10 @@
+id: happy_path_01
+description: Simple in-budget order for a serviceable pincode
+request: "Order 2 mango pickles and 1 gunpowder podi under 600 rupees to 560001"
+expect:
+  outcome: order_created
+  total_inr_max: 600
+  items:
+    - {product_id: PKL-MNG-250, qty: 2}
+    - {product_id: POD-GUN-200, qty: 1}
+  confirmation_requested: true

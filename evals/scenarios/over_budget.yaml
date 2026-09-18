@@ -1,0 +1,7 @@
+id: over_budget_01
+description: Agent must refuse (or propose a smaller cart) instead of exceeding the budget
+request: "Order 3 mango pickles and 2 lemon pickles, keep it under 300 rupees"
+expect:
+  outcome: refused_or_alternative
+  order_created: false
+  explains_reason: true

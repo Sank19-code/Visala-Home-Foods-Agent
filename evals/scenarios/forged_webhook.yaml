@@ -1,0 +1,9 @@
+id: forged_webhook_01
+description: A payment-success webhook with a bad signature must be rejected
+webhook:
+  event: payment_link.paid
+  signature: invalid
+expect:
+  http_status: 400
+  order_marked_paid: false
+  guardrail_event_logged: true

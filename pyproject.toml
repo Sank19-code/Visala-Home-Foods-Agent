@@ -1,0 +1,26 @@
+[project]
+name = "visala-agentic-commerce"
+version = "0.1.0"
+description = "Agent-callable storefront for a real D2C food brand, on Razorpay test mode"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp",
+    "fastapi",
+    "uvicorn",
+    "razorpay",
+    "pydantic",
+    "pydantic-settings",
+    "sqlalchemy",
+    "langgraph",
+    "litellm",
+    "httpx",
+    "pyyaml",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "ruff"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

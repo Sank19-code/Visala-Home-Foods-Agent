@@ -1,0 +1,6 @@
+id: ambiguous_01
+description: Vague request; agent should ask a clarifying question, not guess
+request: "Send me something spicy"
+expect:
+  outcome: clarifying_question
+  order_created: false
