@@ -27,3 +27,27 @@ def db():
 def seeded_db(db):
     seed_products(db, load_catalog())
     return db
+
+
+# --- commerce tool fixtures ------------------------------------------------------------------
+
+
+@pytest.fixture
+def store():
+    # Seeded in-memory DB wired into the MCP runtime + a fake Razorpay, so tests drive the
+    # tools exactly as the MCP server does. Yields (session_factory, fake_gateway).
+    from src.commerce_mcp import runtime
+    from src.payments.razorpay_client import FakeRazorpay, set_gateway
+
+    engine = make_engine("sqlite://")
+    init_db(engine)
+    factory = make_session_factory(engine)
+    with factory() as s:
+        seed_products(s, load_catalog())
+    gateway = FakeRazorpay()
+    runtime.set_session_factory(factory)
+    set_gateway(gateway)
+    yield factory, gateway
+    runtime.set_session_factory(None)
+    set_gateway(None)
+    engine.dispose()
