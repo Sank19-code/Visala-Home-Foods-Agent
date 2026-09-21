@@ -45,7 +45,7 @@ def run_tool(action: str, fn: Callable[..., dict], /, **kwargs: Any) -> dict:
             session.rollback()
             outcome = exc.outcome
             result = {"ok": False, "error": exc.to_dict()}
-        except Exception as exc:  # never leak a traceback to the agent
+        except Exception as exc:  # noqa: BLE001 — tool boundary: never leak a traceback to the agent
             session.rollback()
             outcome = "error"
             result = {
@@ -69,7 +69,7 @@ def run_tool(action: str, fn: Callable[..., dict], /, **kwargs: Any) -> dict:
             latency_ms=latency_ms,
             session_id=SESSION_ID,
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — logging must never fail a completed purchase
         # Never turn a completed purchase into a failure because logging broke — but say so.
         # (stderr is safe: stdout carries the MCP protocol.)
         print(f"[audit] failed to record {action}: {exc!r}", file=sys.stderr)

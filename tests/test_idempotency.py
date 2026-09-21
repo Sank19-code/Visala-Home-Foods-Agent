@@ -1,8 +1,7 @@
 # Same idempotency key -> one order, and the second call returns the first order's id.
+from src.commerce_mcp import server
 from src.db.models import Order
 from tests.helpers import CUSTOMER, PINCODE, cart_with, place
-
-from src.commerce_mcp import server
 
 
 def test_replay_returns_the_original_order(store):

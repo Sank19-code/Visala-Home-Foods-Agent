@@ -5,7 +5,7 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 def to_paise(rupees: int | str | Decimal) -> int:
     # Floats are rejected on purpose: 0.1 + 0.2 != 0.3, and money must be exact.
-    if isinstance(rupees, bool) or isinstance(rupees, float):
+    if isinstance(rupees, (bool, float)):
         raise TypeError("Pass rupees as int, str or Decimal — never float.")
     try:
         value = Decimal(str(rupees))
@@ -16,7 +16,7 @@ def to_paise(rupees: int | str | Decimal) -> int:
     paise = value * 100
     if paise != paise.to_integral_value():
         raise ValueError(f"{rupees!r} has fractions of a paisa.")
-    return int(paise.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    return int(paise.quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 def format_inr(paise: int) -> str:

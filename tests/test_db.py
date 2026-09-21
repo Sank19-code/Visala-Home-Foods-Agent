@@ -8,16 +8,16 @@ from src.db.seed import load_catalog, seed_products
 
 
 def _order(cart_id: str, **overrides) -> Order:
-    fields = dict(
-        cart_id=cart_id,
-        customer_ref="cust_1",
-        customer_name="Test Buyer",
-        customer_phone="9999999999",
-        pincode="560001",
-        items_paise=51000,
-        delivery_paise=4900,
-        amount_paise=55900,
-    )
+    fields = {
+        "cart_id": cart_id,
+        "customer_ref": "cust_1",
+        "customer_name": "Test Buyer",
+        "customer_phone": "9999999999",
+        "pincode": "560001",
+        "items_paise": 51000,
+        "delivery_paise": 4900,
+        "amount_paise": 55900,
+    }
     fields.update(overrides)
     return Order(**fields)
 

@@ -203,8 +203,7 @@ def _validate_customer(name: str, phone: str) -> tuple[str, str]:
     if not 2 <= len(name) <= 120:
         raise InvalidInput("customer_name must be 2-120 characters.")
     phone = re.sub(r"[\s\-]", "", phone or "")
-    if phone.startswith("+91"):
-        phone = phone[3:]
+    phone = phone.removeprefix("+91")
     if not _PHONE_RE.match(phone):
         raise InvalidInput("customer_phone must be a 10-digit Indian mobile number.")
     return name, phone
@@ -220,7 +219,7 @@ def _attach_payment_link(session: Session, order: Order, gateway: PaymentGateway
             description=f"Visala Home Foods order {order.id}",
             notes={"order_id": order.id, "cart_id": order.cart_id, "source": "buyer_agent"},
         )
-    except Exception as exc:  # network, auth, Razorpay validation
+    except Exception as exc:  # noqa: BLE001 — network, auth, Razorpay validation → PaymentLinkFailed
         raise PaymentLinkFailed(
             "The order was saved but the payment link could not be created.",
             hint="Retry create_order with the SAME idempotency_key; it will not duplicate the order.",
@@ -384,7 +383,7 @@ def get_order_status(
         try:
             link = (gateway or get_gateway()).fetch_payment_link(order.razorpay_payment_link_id)
             apply_payment_status(session, order, LINK_STATUS_MAP.get(link.status, "pending"))
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 — refresh is best-effort; fall back to stored status
             note = f"Could not refresh from Razorpay ({type(exc).__name__}); showing stored status."
 
     extra = {"message": _status_message(order.status)}

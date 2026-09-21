@@ -8,8 +8,8 @@ os.environ.setdefault("RAZORPAY_KEY_ID", "rzp_test_ci_dummy")
 os.environ.setdefault("RAZORPAY_KEY_SECRET", "ci_dummy_secret")
 os.environ.setdefault("RAZORPAY_WEBHOOK_SECRET", "ci_dummy_webhook_secret")
 
-from src.db.seed import load_catalog, seed_products  # noqa: E402
-from src.db.session import init_db, make_engine, make_session_factory  # noqa: E402
+from src.db.seed import load_catalog, seed_products
+from src.db.session import init_db, make_engine, make_session_factory
 
 
 @pytest.fixture

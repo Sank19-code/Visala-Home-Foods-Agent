@@ -8,7 +8,7 @@ def _load_config(monkeypatch, key_id):
     monkeypatch.setenv("RAZORPAY_KEY_ID", key_id)
     monkeypatch.setenv("RAZORPAY_KEY_SECRET", "test_secret")
     monkeypatch.setenv("RAZORPAY_WEBHOOK_SECRET", "test_webhook_secret")
-    import src.config as config
+    from src import config
 
     return importlib.reload(config)
 

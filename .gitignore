@@ -9,3 +9,5 @@ venv/
 .ruff_cache/
 evals/results/run_*/
 .DS_Store
+*.egg-info/
+Claude outputs/

@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 from src.db.models import AuditEvent
 
 MAX_JSON_CHARS = 4000
-_SECRET_KEYS = re.compile(r"token|secret|password|signature", re.I)
-_PHONE_KEYS = re.compile(r"phone|contact", re.I)
+_SECRET_KEYS = re.compile(r"token|secret|password|signature", re.IGNORECASE)
+_PHONE_KEYS = re.compile(r"phone|contact", re.IGNORECASE)
 
 
 def redact(value):
