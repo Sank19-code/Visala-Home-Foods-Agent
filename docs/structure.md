@@ -39,9 +39,11 @@ visala-agentic-commerce/
 │
 ├── src/
 │   ├── config.py                      ✅  the only working code — refuses rzp_live_ keys
-│   ├── db/                                ← critical path: build first
-│   │   ├── models.py                  🟡  Product · Cart · Order · AuditEvent · Idempotency
-│   │   └── seed.py                    🟡  loads data/catalog.json
+│   ├── money.py                       ✅  integer paise, floats refused
+│   ├── db/                                ✅ done
+│   │   ├── models.py                  ✅  6 tables, constraints enforce the guarantees
+│   │   ├── session.py                 ✅  engine, FK pragma, append-only audit triggers
+│   │   └── seed.py                    ✅  idempotent upsert · --reset
 │   ├── commerce_mcp/                      agent-facing storefront
 │   │   ├── server.py                  🟡  registers the 7 MCP tools
 │   │   └── tools/
@@ -66,7 +68,11 @@ visala-agentic-commerce/
 │   │   └── daily_summary.py           🟡
 │   └── __init__.py  (×8)              ⬜  package markers
 │
-└── tests/                                 pytest collects 0 tests today
+└── tests/                                 24 tests passing
+    ├── conftest.py                    ✅  in-memory DB fixtures
+    ├── test_db.py                     ✅  11 tests
+    ├── test_money.py                  ✅  10 tests
+    ├── test_config_test_mode.py       ✅  3 tests
     ├── test_idempotency.py            🟡
     ├── test_webhook_signature.py      🟡
     ├── test_spend_limits.py           🟡
@@ -87,7 +93,7 @@ visala-agentic-commerce/
 
 ## Build order
 
-1. `db/models.py` + `db/seed.py` — everything reads from here
+1. ~~`db/models.py` + `db/seed.py`~~ — done 21 Sep
 2. `payments/razorpay_client.py` — first real test-mode payment link
 3. `commerce_mcp/tools/*` then `server.py` — catalogue and cart before orders
 4. `guardrails/*` — wired into `tools/orders.py` as it is written, not bolted on later
