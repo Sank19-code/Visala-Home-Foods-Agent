@@ -11,3 +11,4 @@ evals/results/run_*/
 .DS_Store
 *.egg-info/
 Claude outputs/
+mcp-error.log
