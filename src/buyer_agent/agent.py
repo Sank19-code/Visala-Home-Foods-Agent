@@ -27,13 +27,13 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-# Keep LiteLLM's per-call INFO lines out of the shopping conversation.
+from src.buyer_agent.human import UserChannel
+from src.buyer_agent.prompts import SYSTEM_PROMPT, customer_context
+from src.buyer_agent.toolbox import Toolbox
+
+# Keep LiteLLM's per-call INFO lines out of the shopping conversation (set before it is imported).
 os.environ.setdefault("LITELLM_LOG", "ERROR")
 logging.getLogger("LiteLLM").setLevel(logging.ERROR)
-
-from src.buyer_agent.human import UserChannel  # noqa: E402
-from src.buyer_agent.prompts import SYSTEM_PROMPT, customer_context  # noqa: E402
-from src.buyer_agent.toolbox import Toolbox  # noqa: E402
 
 HOST_TOOLS = [
     {
@@ -125,7 +125,7 @@ def _cost(response: Any) -> float:
         import litellm
 
         return float(litellm.completion_cost(completion_response=response) or 0.0)
-    except Exception:
+    except Exception:  # noqa: BLE001 — cost is informational; unknown models just report 0
         return 0.0
 
 
@@ -314,8 +314,8 @@ class BuyerAgent:
                     try:
                         args = json.loads(tc.function.arguments or "{}")
                         if not isinstance(args, dict):
-                            raise ValueError("arguments must be a JSON object")
-                    except ValueError as exc:
+                            raise TypeError("arguments must be a JSON object")
+                    except (ValueError, TypeError) as exc:
                         args, output = {}, {"ok": False, "error": {
                             "code": "invalid_arguments", "message": f"Bad tool arguments: {exc}"}}
                     else:
@@ -333,7 +333,7 @@ class BuyerAgent:
                     })
             else:
                 result.stop_reason = "max_turns"
-        except Exception as exc:  # provider/gateway errors, network — reported, never swallowed
+        except Exception as exc:  # noqa: BLE001 — provider/gateway/network errors go into the trace
             result.error = f"{type(exc).__name__}: {exc}"[:500]
 
         result.cost_usd = round(result.cost_usd, 6)

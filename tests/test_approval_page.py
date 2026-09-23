@@ -5,8 +5,8 @@ import re
 
 from fastapi.testclient import TestClient
 
-from src.commerce_mcp import server
 from src import config
+from src.commerce_mcp import server
 from src.db.models import Order
 from src.payments.webhooks import app
 from tests.helpers import CUSTOMER, PINCODE, cart_with

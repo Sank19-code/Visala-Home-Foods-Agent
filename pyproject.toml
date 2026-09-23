@@ -16,6 +16,7 @@ dependencies = [
     "pyyaml",
     "python-dotenv",
     "python-multipart",
+    "typing-extensions",
 ]
 
 [project.optional-dependencies]

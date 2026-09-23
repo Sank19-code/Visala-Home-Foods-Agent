@@ -110,7 +110,7 @@ def test_happy_path_order_is_placed_and_paid(store):
     state = {}
     user = ScriptedUser(on_payment_link=lambda url, order_id: gateway.mark(
         next(iter(gateway.links)), "paid"))
-    result, agent = _run(_happy_steps(state), user)
+    result, _ = _run(_happy_steps(state), user)
 
     assert result.error is None and result.stop_reason == "stop"
     assert len(result.order_ids) == 1 and state["payment"]["status"] == "paid"

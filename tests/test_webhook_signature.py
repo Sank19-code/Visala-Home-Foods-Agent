@@ -118,7 +118,7 @@ def test_amount_mismatch_is_refused(placed):
 
 
 def test_link_for_another_order_is_refused(placed):
-    factory, order = placed
+    _, order = placed
     resp = _post(TestClient(app), _event("payment_link.paid", order, link_id="plink_other"))
     # found via reference_id, but the stored link id differs
     assert resp.json()["status"] == "rejected"
@@ -134,12 +134,12 @@ def test_expired_webhook_releases_stock(placed):
 
 
 def test_cancelled_webhook(placed):
-    factory, order = placed
+    _, order = placed
     assert _post(TestClient(app), _event("payment_link.cancelled", order)).json()["status"] == "applied"
 
 
 def test_payment_after_expiry_is_flagged(placed):
-    factory, order = placed
+    _, order = placed
     client = TestClient(app)
     _post(client, _event("payment_link.expired", order), event_id="evt_a")
     resp = _post(client, _event("payment_link.paid", order), event_id="evt_b")

@@ -34,6 +34,7 @@ import hashlib
 import hmac
 import html
 import json
+import logging
 from typing import Any
 
 from fastapi import FastAPI, Form, Request
@@ -48,6 +49,7 @@ from src.guardrails import audit_log, confirmation, spend_limits
 from src.money import format_inr
 
 app = FastAPI(title="Visala Agentic Commerce")
+log = logging.getLogger(__name__)
 
 
 def _settings():
@@ -66,8 +68,8 @@ def _audit(action: str, *, actor: str = "webhook", outcome: str = "ok", args=Non
             result=result or {},
             outcome=outcome,
         )
-    except Exception:
-        pass  # never fail a webhook delivery because the log could not be written
+    except Exception:  # never fail a webhook delivery because logging failed
+        log.warning("audit write failed for %s", action, exc_info=True)
 
 
 # --- signatures ------------------------------------------------------------------------------
@@ -238,9 +240,9 @@ async def razorpay_webhook(request: Request):
 
     try:
         payload = json.loads(raw)
-        if not isinstance(payload, dict):
-            raise ValueError("payload is not an object")
     except ValueError:
+        payload = None
+    if not isinstance(payload, dict):
         _audit("webhook.rejected", outcome="blocked", args={"event_id": event_id},
                result={"reason": "unreadable body"})
         return JSONResponse({"error": "invalid JSON"}, status_code=400)
