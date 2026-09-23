@@ -35,6 +35,11 @@ def set_session_factory(factory: Callable[[], Session] | None) -> None:
     _session_factory = factory or _default_factory
 
 
+def open_session() -> Session:
+    # Same database the tools use. The webhook app and the buyer CLI go through this too.
+    return _session_factory()
+
+
 def run_tool(action: str, fn: Callable[..., dict], /, **kwargs: Any) -> dict:
     started = time.perf_counter()
     outcome = "ok"

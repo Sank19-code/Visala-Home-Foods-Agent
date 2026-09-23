@@ -133,7 +133,15 @@ def get_gateway() -> PaymentGateway:
     if _gateway is None:
         from src.config import settings
 
-        _gateway = RazorpayGateway(settings.razorpay_key_id, settings.razorpay_key_secret)
+        if settings.payment_gateway == "fake":
+            _gateway = FakeRazorpay()
+        else:
+            _gateway = RazorpayGateway(
+                settings.razorpay_key_id,
+                settings.razorpay_key_secret,
+                # After paying, Razorpay redirects the buyer's browser here with a signed status.
+                callback_url=f"{settings.public_base_url.rstrip('/')}/payments/callback",
+            )
     return _gateway
 
 

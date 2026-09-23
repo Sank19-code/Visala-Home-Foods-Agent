@@ -5,18 +5,17 @@ description = "Agent-callable storefront for a real D2C food brand, on Razorpay 
 requires-python = ">=3.10"
 dependencies = [
     "mcp>=1.10,<2",
-    "mcp",
     "fastapi",
     "uvicorn",
     "razorpay",
     "pydantic",
     "pydantic-settings",
     "sqlalchemy",
-    "langgraph",
     "litellm",
     "httpx",
     "pyyaml",
     "python-dotenv",
+    "python-multipart",
 ]
 
 [project.optional-dependencies]

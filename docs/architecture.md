@@ -5,7 +5,7 @@ _TODO: export this as docs/architecture.png for the README._
 ```
   User ("order 2 pickles under 600")
         |
-   Buyer agent (LangGraph)
+   Buyer agent (Claude via LiteLLM)
         |  MCP tool calls
    Commerce MCP server ──► Guardrails (spend cap, confirmation, idempotency, audit)
         |                        |

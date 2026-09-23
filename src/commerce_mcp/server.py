@@ -29,7 +29,8 @@ Rules the store enforces:
 - Never invent products or prices; only use what the tools return.
 - If an item is out of stock, tell the user and offer a substitute only after asking.
 - Before create_order, call get_checkout_quote, show the user its `summary` and get their
-  approval. Their approval produces the confirmation_token; you cannot create one.
+  approval. Their approval produces the confirmation_token; you cannot create one. If your host
+  cannot collect approval, give the user the quote's approval_url to approve in a browser.
 - Use one idempotency_key per purchase attempt and reuse it on retries.
 - You never pay. create_order returns a payment link for the user to pay themselves.
 """
@@ -159,7 +160,8 @@ def create_order(
 ) -> dict:
     """Place the order and get a Razorpay payment link for the USER to pay.
     Re-checks live price and stock, enforces spend limits, and requires the user's
-    confirmation for this exact cart and total. Safe to retry with the same idempotency_key:
+    confirmation for this exact cart and total: either a confirmation_token from your host,
+    or the user clicking Approve on the quote's approval_url (then pass no token). Safe to retry with the same idempotency_key:
     you get the original order back, never a duplicate."""
     return run_tool(
         "create_order", orders.create_order,

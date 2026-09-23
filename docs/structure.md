@@ -53,16 +53,18 @@ visala-agentic-commerce/
 │   │       └── orders.py              🟡  create_order — 6-step contract written
 │   ├── payments/                          money lane
 │   │   ├── razorpay_client.py         🟡  payment links, paise conversion
-│   │   └── webhooks.py                🟡  FastAPI app exists, 0 routes
+│   │   └── webhooks.py                ✅  webhooks, approval page, payment callback
 │   ├── guardrails/                        enforced in code, not in prompts
 │   │   ├── idempotency.py             🟡  one order per key
 │   │   ├── spend_limits.py            🟡  per-order / per-day caps
 │   │   ├── confirmation.py            🟡  no order without a consent token
 │   │   └── audit_log.py               🟡  append-only tool-call log
 │   ├── buyer_agent/                       the AI customer
-│   │   ├── graph.py                   🟡  LangGraph flow
-│   │   ├── prompts.py                 🟡  system prompts
-│   │   └── cli.py                     🟡  python -m src.buyer_agent.cli
+│   │   ├── agent.py                   ✅  Claude tool-use loop + host tools
+│   │   ├── toolbox.py                 ✅  MCP client (stdio) / in-process
+│   │   ├── human.py                   ✅  console + scripted user
+│   │   ├── prompts.py                 ✅  system prompt
+│   │   └── cli.py                     ✅  python -m src.buyer_agent.cli
 │   ├── merchant_agent/                    the growth half
 │   │   ├── abandoned_carts.py         🟡
 │   │   └── daily_summary.py           🟡

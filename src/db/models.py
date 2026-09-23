@@ -142,3 +142,33 @@ class AuditEvent(Base):
     result_json: Mapped[str] = mapped_column(Text, default="{}")
     outcome: Mapped[str] = mapped_column(String(10))
     latency_ms: Mapped[int | None] = mapped_column(Integer)
+
+
+class PurchaseApproval(Base):
+    # A human's "yes" to one exact quote, given on the approval page (GET/POST /approve/...).
+    # create_order accepts it in place of a confirmation_token, so MCP clients that cannot show
+    # our own prompt (e.g. Claude Desktop) still have a human-only approval path.
+    # fingerprint covers cart lines, live prices, pincode and total: any change voids it.
+    __tablename__ = "purchase_approvals"
+    __table_args__ = (CheckConstraint("amount_paise > 0", name="approval_amount_positive"),)
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: _id("apr"))
+    cart_id: Mapped[str] = mapped_column(ForeignKey("carts.id"), index=True)
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    amount_paise: Mapped[int] = mapped_column(Integer)
+    approved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class WebhookEvent(Base):
+    # Razorpay delivers webhooks at-least-once and retries on any non-2xx, so the same event can
+    # arrive several times. X-Razorpay-Event-Id is the primary key: a replay is detected and
+    # acknowledged without being processed twice.
+    __tablename__ = "webhook_events"
+
+    event_id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    event: Mapped[str] = mapped_column(String(60))
+    order_id: Mapped[str | None] = mapped_column(String(40), index=True)
+    outcome: Mapped[str] = mapped_column(String(20))  # applied | ignored | rejected
+    detail: Mapped[str] = mapped_column(Text, default="")
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

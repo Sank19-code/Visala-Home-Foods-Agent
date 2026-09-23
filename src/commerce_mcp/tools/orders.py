@@ -123,6 +123,13 @@ def _reprice_cart(cart: Cart, quote: Quote) -> None:
         item.unit_price_paise = live[item.product_id]
 
 
+def approval_url(cart_id: str, pincode: str) -> str:
+    # Human-only approval page served by src/payments/webhooks.py.
+    from src.config import settings
+
+    return f"{settings.public_base_url.rstrip('/')}/approve/{cart_id}?pincode={pincode}"
+
+
 def _summary_text(q: Quote) -> str:
     parts = [f"{ln['qty']} x {ln['name']} ({format_inr(ln['unit_price_paise'])})" for ln in q.lines]
     delivery = "free delivery" if q.delivery_paise == 0 else f"delivery {format_inr(q.delivery_paise)}"
@@ -156,9 +163,12 @@ def get_checkout_quote(session: Session, cart_id: str, pincode: str) -> dict:
         "within_spend_limits": within,
         "spend_limits": limits,
         "requires_confirmation": settings.require_user_confirmation,
+        "approval_url": approval_url(cart.id, q.pincode),
         "next_step": (
             "Show the user `summary` word for word and ask them to approve this exact total. "
-            "Only their approval produces the confirmation_token needed by create_order."
+            "Only their approval produces the confirmation_token needed by create_order. "
+            "If you cannot prompt the user yourself, give them approval_url to approve in a "
+            "browser, then call create_order without a token."
             if within
             else "This total is above the spend limit. Reduce the cart before asking the user."
         ),
@@ -299,7 +309,10 @@ def create_order(
 
     # 3. explicit human confirmation for THIS cart, pincode and total
     if settings.require_user_confirmation:
-        confirmation.verify_token(confirmation_token, cart.id, q.fingerprint, q.amount_paise)
+        confirmation.require_confirmation(
+            session, confirmation_token, cart.id, q.fingerprint, q.amount_paise,
+            approval_url=approval_url(cart.id, q.pincode),
+        )
 
     # 4. one transaction: order + idempotency record + stock + cart status
     order = Order(

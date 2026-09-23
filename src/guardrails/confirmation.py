@@ -13,6 +13,13 @@
 #
 # Deliberately NOT exposed as an MCP tool: a tool the agent can call to "confirm" would be
 # a confirmation the agent gives itself.
+#
+# Two ways for the human to approve, both outside the LLM:
+#   1. Buyer CLI (src/buyer_agent): the person types "yes" in the terminal; the CLI host calls
+#      issue_token and passes the token along with create_order.
+#   2. Approval page (src/payments/webhooks.py, GET /approve/<cart_id>): for MCP clients such as
+#      Claude Desktop that cannot show our prompt. Clicking Approve stores a PurchaseApproval
+#      row; create_order then accepts it with no token.
 import base64
 import hashlib
 import hmac
@@ -92,3 +99,61 @@ def verify_token(
             confirmed_amount_paise=body.get("a"),
             current_amount_paise=amount_paise,
         )
+
+
+# --- stored approvals (approval page) ----------------------------------------------------------
+
+
+def record_approval(session, cart_id: str, fp: str, amount_paise: int, *, ttl: int = TOKEN_TTL_SECONDS):
+    from datetime import datetime, timedelta, timezone
+
+    from src.db.models import PurchaseApproval
+
+    approval = PurchaseApproval(
+        cart_id=cart_id,
+        fingerprint=fp,
+        amount_paise=amount_paise,
+        expires_at=datetime.now(timezone.utc) + timedelta(seconds=ttl),
+    )
+    session.add(approval)
+    session.commit()
+    return approval
+
+
+def has_stored_approval(session, cart_id: str, fp: str, amount_paise: int) -> bool:
+    from datetime import datetime, timezone
+
+    from sqlalchemy import select
+
+    from src.db.models import PurchaseApproval
+
+    found = session.scalar(
+        select(PurchaseApproval.id).where(
+            PurchaseApproval.cart_id == cart_id,
+            PurchaseApproval.fingerprint == fp,
+            PurchaseApproval.amount_paise == amount_paise,
+            PurchaseApproval.expires_at > datetime.now(timezone.utc),
+        )
+    )
+    return found is not None
+
+
+def require_confirmation(
+    session, token: str | None, cart_id: str, fp: str, amount_paise: int, approval_url: str = ""
+) -> str:
+    # Returns how the order was confirmed ("token" | "approval_page"); raises otherwise.
+    if token:
+        verify_token(token, cart_id, fp, amount_paise)
+        return "token"
+    if has_stored_approval(session, cart_id, fp, amount_paise):
+        return "approval_page"
+    raise ConfirmationRequired(
+        "This order needs the user's explicit confirmation.",
+        hint=(
+            f"Ask the user to open {approval_url} and approve the exact total, then call "
+            "create_order again (no token needed after they approve there)."
+            if approval_url
+            else "Show the user the exact quote and get their approval first."
+        ),
+        approval_url=approval_url or None,
+    )
